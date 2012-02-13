@@ -190,7 +190,7 @@ const
 function zmq_socket(context: Pointer; type_: Integer): Pointer; cdecl; external zmqlib;
 function zmq_close(s: Pointer): Integer; cdecl; external zmqlib;
 function zmq_setsockopt(s: Pointer; option: Integer; const optval: Pointer; optvallen: size_t): Integer; cdecl; external zmqlib;
-function zmq_getsockopt(s: Pointer; option: Integer; optval: Pointer; var optvallen: size_t): Integer; cdecl; external zmqlib;
+function zmq_getsockopt(s: Pointer; option: Integer; var optval: Pointer; var optvallen: size_t): Integer; cdecl; external zmqlib;
 function zmq_bind(s: Pointer; const addr: PAnsiChar): Integer; cdecl; external zmqlib;
 function zmq_connect(s: Pointer; const addr: PAnsiChar): Integer; cdecl; external zmqlib;
 function zmq_send(s: Pointer; var msg: zmq_msg_t; flags: Integer): Integer; cdecl; external zmqlib;
