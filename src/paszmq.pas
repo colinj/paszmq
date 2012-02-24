@@ -104,9 +104,27 @@ type
     property Ptr: Pointer read FSocket;
   end;
 
+  TZMQPollEvent = (peNone, pePollIn, pePollOut, pePollError);
+
+  TZMQPollEvents = set of TZMQPollEvent;
+
+  TZMQPollItemArray = array of zmq_pollitem_t;
+
+  TZMQPoller = class(TObject)
+  private
+    FItems: Pointer;
+    function GetPollResult(aIndex: Integer): TZMQPollEvents;
+  public
+    procedure Add(const aSocket: TZMQSocket; const aEvents: TZMQPollEvents; const aFileDesc: Integer);
+    procedure Remove(const aSocket: TZMQSocket);
+    procedure Poll;
+    property PollResult[aIndex: Integer]: TZMQPollEvents read GetPollResult;
+  end;
+
   function ZMQPoll(var aItems: TZmqPollitemT; nItems: Integer; const aTimeout: Integer = -1): Integer;
   procedure ZMQDevice(aDevice: Integer; aInSocket, aOutSocket: TZMQSocket);
   procedure ZMQVersion(var aMajor, aMinor, aPatch: Integer);
+
 
 implementation
 
@@ -324,5 +342,28 @@ begin
   if zmq_setsockopt(FSocket, ZMQ_SOCKET_OPTION[aOption], aOptVal, aOptValLength) <> 0 then
     raise EZMQException.CreateErr;
 end;
+
+{ TZMQPoller }
+
+procedure TZMQPoller.Add(const aSocket: TZMQSocket; const aEvents: TZMQPollEvents; const aFileDesc: Integer);
+begin
+
+end;
+
+function TZMQPoller.GetPollResult(aIndex: Integer): TZMQPollEvents;
+begin
+
+end;
+
+procedure TZMQPoller.Poll;
+begin
+
+end;
+
+procedure TZMQPoller.Remove(const aSocket: TZMQSocket);
+begin
+
+end;
+
 
 end.
