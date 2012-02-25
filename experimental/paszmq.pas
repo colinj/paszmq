@@ -24,6 +24,32 @@ interface
 uses SysUtils, Classes, zmq;
 
 type
+  TZMQSocketType = (stPair, stPublish, stSubscribe, stRequest, stReply, stDealer, stRouter, stPull, stPush,
+    stXPublish, stXSubscribe, stXRequest, stXReply, stUpstream, stDownstream);
+
+const
+  ZMQ_SOCKET_TYPE: array[TZMQSocketType] of Integer =
+    (ZMQ_PAIR, ZMQ_PUB, ZMQ_SUB, ZMQ_REQ, ZMQ_REP, ZMQ_DEALER, ZMQ_ROUTER, ZMQ_PULL, ZMQ_PUSH, ZMQ_XPUB,
+    ZMQ_XSUB, ZMQ_XREQ, ZMQ_XREP, ZMQ_UPSTREAM, ZMQ_DOWNSTREAM);
+
+type
+  TZMQSocketOption = (soHighWaterMark, soSwap, soAffinity, soIdentity, soSubscribe, soUnsubscribe, soRate, soRecoveryInterval,
+    soMultiCastLoop, soSendBuffer, soReceiveBuffer, soReceiveMore, soFD, soEvents, soType, soLinger, soReconnectInterval,
+    soBackLog, soRecoveryIntervalMSec, soReconnectIntervalMax);
+
+const
+  ZMQ_SOCKET_OPTION: array[TZMQSocketOption] of Integer =
+    (ZMQ_HWM, ZMQ_SWAP, ZMQ_AFFINITY, ZMQ_IDENTITY, ZMQ_SUBSCRIBE, ZMQ_UNSUBSCRIBE, ZMQ_RATE, ZMQ_RECOVERY_IVL,
+    ZMQ_MCAST_LOOP, ZMQ_SNDBUF, ZMQ_RCVBUF, ZMQ_RCVMORE, ZMQ_FD, ZMQ_EVENTS, ZMQ_TYPE, ZMQ_LINGER, ZMQ_RECONNECT_IVL,
+    ZMQ_BACKLOG, ZMQ_RECOVERY_IVL_MSEC, ZMQ_RECONNECT_IVL_MAX);
+
+type
+  TZMQSendRecvOption = (srNoBlock, srSendMore);
+
+const
+  ZMQ_SEND_RECV_OPTION: array[TZMQSendRecvOption] of Integer = (ZMQ_NOBLOCK, ZMQ_SNDMORE);
+
+type
   TFreeProc = zmq_free_fn;
 
   EZMQException = class(Exception)
@@ -66,21 +92,39 @@ type
   private
     FSocket: Pointer;
   public
-    constructor Create(aContext: TZMQContext; aType: Integer);
+    constructor Create(aContext: TZMQContext; aType: TZMQSocketType);
     destructor Destroy; override;
     procedure Close;
-    procedure SetSocketOpt(aOption: Integer; const aOptVal: Pointer; aOptValLength: Cardinal);
-    procedure GetSocketOpt(aOption: Integer; aOptVal: Pointer; var aOptValLength: Cardinal);
-    procedure Bind(const aAddr: string);
-    procedure Connect(const aAddr: string);
-    function Send(aMsg: TZMQMessage; aFlags: Integer): Boolean;
-    function Receive(var aMsg: TZMQMessage; aFlags: Integer): Boolean;
+    procedure SetSocketOpt(aOption: TZMQSocketOption; const aOptVal: Pointer; aOptValLength: Cardinal);
+    procedure GetSocketOpt(aOption: TZMQSocketOption; var aOptVal: Pointer; var aOptValLength: Cardinal);
+    procedure Bind(aAddr: AnsiString);
+    procedure Connect(aAddr: AnsiString);
+    function Send(aMsg: TZMQMessage; aFlags: TZMQSendRecvOption): Boolean;
+    function Receive(var aMsg: TZMQMessage; aFlags: TZMQSendRecvOption): Boolean;
     property Ptr: Pointer read FSocket;
+  end;
+
+  TZMQPollEvent = (peNone, pePollIn, pePollOut, pePollError);
+
+  TZMQPollEvents = set of TZMQPollEvent;
+
+  TZMQPollItemArray = array of zmq_pollitem_t;
+
+  TZMQPoller = class(TObject)
+  private
+    FItems: Pointer;
+    function GetPollResult(aIndex: Integer): TZMQPollEvents;
+  public
+    procedure Add(const aSocket: TZMQSocket; const aEvents: TZMQPollEvents; const aFileDesc: Integer);
+    procedure Remove(const aSocket: TZMQSocket);
+    procedure Poll;
+    property PollResult[aIndex: Integer]: TZMQPollEvents read GetPollResult;
   end;
 
   function ZMQPoll(var aItems: TZmqPollitemT; nItems: Integer; const aTimeout: Integer = -1): Integer;
   procedure ZMQDevice(aDevice: Integer; aInSocket, aOutSocket: TZMQSocket);
   procedure ZMQVersion(var aMajor, aMinor, aPatch: Integer);
+
 
 implementation
 
@@ -221,10 +265,10 @@ end;
 
 { TZMQSocket }
 
-constructor TZMQSocket.Create(aContext: TZMQContext; aType: Integer);
+constructor TZMQSocket.Create(aContext: TZMQContext; aType: TZMQSocketType);
 begin
   inherited Create;
-  FSocket := zmq_socket(aContext.Ptr, aType);
+  FSocket := zmq_socket(aContext.Ptr, ZMQ_SOCKET_TYPE[aType]);
   if FSocket = nil then
     raise EZMQException.CreateErr;
 end;
@@ -235,9 +279,9 @@ begin
   inherited;
 end;
 
-procedure TZMQSocket.Bind(const aAddr: AnsiString);
+procedure TZMQSocket.Bind(aAddr: AnsiString);
 begin
-  if zmq_bind(FSocket, PAnsiChar(Address)) <> 0 then
+  if zmq_bind(FSocket, PAnsiChar(aAddr)) <> 0 then
     raise EZMQException.CreateErr;
 end;
 
@@ -251,23 +295,23 @@ begin
   end;
 end;
 
-procedure TZMQSocket.Connect(const aAddr: AnsiString);
+procedure TZMQSocket.Connect(aAddr: AnsiString);
 begin
-  if zmq_connect(FSocket, PAnsiString(Address)) <> 0 then
+  if zmq_connect(FSocket, PAnsiChar(aAddr)) <> 0 then
     raise EZMQException.CreateErr;
 end;
 
-procedure TZMQSocket.GetSocketOpt(aOption: Integer; aOptVal: Pointer; var aOptValLength: Cardinal);
+procedure TZMQSocket.GetSocketOpt(aOption: TZMQSocketOption; var aOptVal: Pointer; var aOptValLength: Cardinal);
 begin
-  if zmq_getsockopt(FSocket, aOption, aOptVal, aOptValLength) <> 0 then
+  if zmq_getsockopt(FSocket, ZMQ_SOCKET_OPTION[aOption], aOptVal, aOptValLength) <> 0 then
     raise EZMQException.CreateErr;
 end;
 
-function TZMQSocket.Receive(var aMsg: TZMQMessage; aFlags: Integer): Boolean;
+function TZMQSocket.Receive(var aMsg: TZMQMessage; aFlags: TZMQSendRecvOption): Boolean;
 var
   rc: Integer;
 begin
-  rc := zmq_recv(FSocket, aMsg.FMessage, aFlags);
+  rc := zmq_recv(FSocket, aMsg.FMessage, ZMQ_SEND_RECV_OPTION[aFlags]);
 
   if rc = 0 then
     Result := True
@@ -278,11 +322,11 @@ begin
       raise EZMQException.CreateErr;
 end;
 
-function TZMQSocket.Send(aMsg: TZMQMessage; aFlags: Integer): Boolean;
+function TZMQSocket.Send(aMsg: TZMQMessage; aFlags: TZMQSendRecvOption): Boolean;
 var
   rc: Integer;
 begin
-  rc := zmq_send(FSocket, aMsg.FMessage, aFlags);
+  rc := zmq_send(FSocket, aMsg.FMessage, ZMQ_SEND_RECV_OPTION[aFlags]);
 
   if rc = 0 then
     Result := True
@@ -293,10 +337,33 @@ begin
       raise EZMQException.CreateErr;
 end;
 
-procedure TZMQSocket.SetSocketOpt(aOption: Integer; const aOptVal: Pointer; aOptValLength: Cardinal);
+procedure TZMQSocket.SetSocketOpt(aOption: TZMQSocketOption; const aOptVal: Pointer; aOptValLength: Cardinal);
 begin
-  if zmq_setsockopt(FSocket, aOption, aOptVal, aOptValLength) <> 0 then
+  if zmq_setsockopt(FSocket, ZMQ_SOCKET_OPTION[aOption], aOptVal, aOptValLength) <> 0 then
     raise EZMQException.CreateErr;
 end;
+
+{ TZMQPoller }
+
+procedure TZMQPoller.Add(const aSocket: TZMQSocket; const aEvents: TZMQPollEvents; const aFileDesc: Integer);
+begin
+
+end;
+
+function TZMQPoller.GetPollResult(aIndex: Integer): TZMQPollEvents;
+begin
+
+end;
+
+procedure TZMQPoller.Poll;
+begin
+
+end;
+
+procedure TZMQPoller.Remove(const aSocket: TZMQSocket);
+begin
+
+end;
+
 
 end.
