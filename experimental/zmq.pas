@@ -217,7 +217,7 @@ type
 
   TZmqPollitemT = zmq_pollitem_t;
 
-function zmq_poll(var items: zmq_pollitem_t; nitems: Integer; timeout: Longint): Integer; cdecl; external zmqlib;
+function zmq_poll(const items: PZmqPollitemT; nitems: Integer; timeout: Longint): Integer; cdecl; external zmqlib;
 
 //****************************************************************************
 //  Built-in devices
