@@ -68,11 +68,11 @@ type
   public
     constructor Create; overload;
     constructor Create(aSize: Cardinal); overload;
-    constructor Create(aData: Pointer; aSize: Cardinal; aFreeProc: TFreeProc; const aHint: Pointer); overload;
+    constructor Create(aData: Pointer; aSize: Cardinal; aFreeProc: TFreeProc; const aHint: Pointer = nil); overload;
     destructor Destroy; override;
     procedure Rebuild; overload;
     procedure Rebuild(aSize: Cardinal); overload;
-    constructor Rebuild(aData: Pointer; aSize: Cardinal; aFreeProc: TFreeProc; const aHint: Pointer); overload;
+    constructor Rebuild(aData: Pointer; aSize: Cardinal; aFreeProc: TFreeProc; const aHint: Pointer = nil); overload;
     procedure Move(var aMsg: TZMQMessage);
     procedure Copy(var aMsg: TZMQMessage);
     property Data: Pointer read GetData;
@@ -104,41 +104,38 @@ type
     property Ptr: Pointer read FSocket;
   end;
 
-  TZMQPollEvent = (peNone, pePollIn, pePollOut, pePollError);
+  TZMQPollEvent = (pePollIn, pePollOut, pePollError);
 
   TZMQPollEvents = set of TZMQPollEvent;
 
-  TZMQPollItemArray = array of zmq_pollitem_t;
+  TZMQPollItem = record
+    Socket: TZMQSocket;
+    FileDesc: Integer;
+    Events: TZMQPollEvents;
+    constructor Create(const aSocket: TZMQSocket; aEvents: TZMQPollEvents; const aFileDesc: Integer = 0);
+  end;
 
   TZMQPoller = class(TObject)
   private
     FItems: Pointer;
+    FArraySize: Integer;
     function GetPollResult(aIndex: Integer): TZMQPollEvents;
   public
-    procedure Add(const aSocket: TZMQSocket; const aEvents: TZMQPollEvents; const aFileDesc: Integer);
-    procedure Remove(const aSocket: TZMQSocket);
-    procedure Poll;
+    constructor Create;
+    destructor Destroy; override;
+    procedure RegisterSockets(const aPollItems: array of TZMQPollItem);
+    procedure Poll(const aTimeoutMSec: Integer = -1);
     property PollResult[aIndex: Integer]: TZMQPollEvents read GetPollResult;
   end;
 
-  function ZMQPoll(var aItems: TZmqPollitemT; nItems: Integer; const aTimeout: Integer = -1): Integer;
   procedure ZMQDevice(aDevice: Integer; aInSocket, aOutSocket: TZMQSocket);
   procedure ZMQVersion(var aMajor, aMinor, aPatch: Integer);
-
 
 implementation
 
 const
 // <errno.h>
   EAGAIN = 16;
-
-function ZMQPoll(var aItems: TZmqPollitemT; nItems: Integer; const aTimeout: Integer = -1): Integer;
-begin
-  Result := zmq_poll(aItems, nItems, aTimeout);
-
-  if Result < 0 then
-    raise EZMQException.CreateErr;
-end;
 
 procedure ZMQDevice(aDevice: Integer; aInSocket, aOutSocket: TZMQSocket);
 begin
@@ -343,27 +340,94 @@ begin
     raise EZMQException.CreateErr;
 end;
 
+{ TZMQPollItem }
+
+constructor TZMQPollItem.Create(const aSocket: TZMQSocket; aEvents: TZMQPollEvents; const aFileDesc: Integer = 0);
+begin
+  Self.Socket := aSocket;
+  Self.FileDesc := aFileDesc;
+  Self.Events := aEvents;
+end;
+
 { TZMQPoller }
 
-procedure TZMQPoller.Add(const aSocket: TZMQSocket; const aEvents: TZMQPollEvents; const aFileDesc: Integer);
+constructor TZMQPoller.Create;
 begin
+  inherited;
+  FArraySize := 0;
+  FItems := nil;
+end;
 
+destructor TZMQPoller.Destroy;
+begin
+  if Assigned(FItems) then
+    FreeMem(FItems);
+
+  inherited;
+end;
+
+procedure TZMQPoller.RegisterSockets(const aPollItems: array of TZMQPollItem);
+const
+  POLL_REC_SIZE = SizeOf(zmq_pollitem_t);
+var
+  P: PZmqPollitemT;
+  Item: TZMQPollItem;
+begin
+  FArraySize := High(aPollItems) + 1;
+
+  if Assigned(FItems) then
+    FreeMem(FItems);
+
+  GetMem(FItems, POLL_REC_SIZE * FArraySize);
+
+  P := FItems;
+
+  for Item in aPollItems do
+  begin
+    P.socket := Item.Socket.FSocket;
+    P.fd := Item.FileDesc;
+    P.revents := 0;
+    P.events := 0;
+    if pePollIn in Item.Events then
+      Inc(P.events, ZMQ_POLLIN);
+    if pePollOut in Item.Events then
+      Inc(P.events, ZMQ_POLLOUT);
+    if pePollError in Item.Events then
+      Inc(P.events, ZMQ_POLLERR);
+
+    Inc(P);
+  end;
 end;
 
 function TZMQPoller.GetPollResult(aIndex: Integer): TZMQPollEvents;
+var
+  P: PZmqPollitemT;
 begin
+  if (aIndex >= 0) and (aIndex < FArraySize) then
+  begin
+    P := FItems;
+    Inc(P, aIndex);
 
+    Result := [];
+    if (P.revents and ZMQ_POLLIN) = ZMQ_POLLIN then
+      Result := Result + [pePollIn];
+    if (P.revents and ZMQ_POLLOUT) = ZMQ_POLLOUT then
+      Result := Result + [pePollOut];
+    if (P.revents and ZMQ_POLLERR) = ZMQ_POLLERR then
+      Result := Result + [pePollError];
+  end
+  else
+    raise ERangeError.Create('Index out of range.');
 end;
 
-procedure TZMQPoller.Poll;
+procedure TZMQPoller.Poll(const aTimeoutMSec: Integer);
+var
+  rc: Integer;
 begin
+  rc := zmq_poll(FItems, FArraySize, aTimeoutMSec);
 
+  if RC < 0 then
+    raise EZMQException.CreateErr;
 end;
-
-procedure TZMQPoller.Remove(const aSocket: TZMQSocket);
-begin
-
-end;
-
 
 end.
