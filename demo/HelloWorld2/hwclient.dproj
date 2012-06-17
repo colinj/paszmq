@@ -20,10 +20,10 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_UnitSearchPath>..\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\..\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
-			<DCC_ExeOutput>..\bin</DCC_ExeOutput>
-			<DCC_DependencyCheckOutputName>..\bin\hwclient.exe</DCC_DependencyCheckOutputName>
+			<DCC_ExeOutput>..\..\bin\</DCC_ExeOutput>
+			<DCC_DependencyCheckOutputName>..\..\bin\hwclient.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
