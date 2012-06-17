@@ -102,7 +102,7 @@ const
 
   ZMQ_MSG_MORE                        = 1;
   ZMQ_MSG_SHARED                      = 128;
-  ZMQ_MSG_MASK                        = 129;  { Merges all the flags }
+  ZMQ_MSG_MASK                        = 129;  // Merges all the flags
 
 //  A message. Note that 'content' is not a pointer to the raw data.
 //  Rather it is pointer to zmq::msg_content_t structure
@@ -182,6 +182,8 @@ const
   ZMQ_BACKLOG                         = 19;
   ZMQ_RECOVERY_IVL_MSEC               = 20;  //  opt. recovery time, reconcile in 3.x
   ZMQ_RECONNECT_IVL_MAX               = 21;
+  ZMQ_RCVTIMEO                        = 27;
+  ZMQ_SNDTIMEO                        = 28;
 
   //  Send/recv options.
   ZMQ_NOBLOCK                         = 1;
