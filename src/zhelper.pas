@@ -29,7 +29,7 @@ begin
     msg_data := zmq_msg_data(msg);
     SetLength(LBytes, msg_size);
     System.Move(msg_data^, LBytes[0], msg_size);
-    Result := TEncoding.Unicode.GetString(LBytes, 0, msg_size);
+    Result := TEncoding.UTF8.GetString(LBytes, 0, msg_size);
   end;
   zmq_msg_close(msg);
 end;
@@ -40,7 +40,7 @@ var
   msg_data: Pointer;
   LBytes: TBytes;
 begin
-  LBytes := TEncoding.Unicode.GetBytes(s);
+  LBytes := TEncoding.UTF8.GetBytes(s);
   zmq_msg_init_size(msg, Length(LBytes));
   msg_data := zmq_msg_data(msg);
   System.Move(LBytes[0], msg_data^, Length(LBytes));
