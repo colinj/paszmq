@@ -1,7 +1,7 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{E7D7BDAC-3693-4723-9909-EA170AE678BE}</ProjectGuid>
-			<MainSource>hwclient.dpr</MainSource>
+			<ProjectGuid>{B4519B6F-15BE-43C3-B4DB-A48774EC6CFE}</ProjectGuid>
+			<MainSource>hwserver2.dpr</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>12.0</ProjectVersion>
@@ -20,10 +20,10 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_ExeOutput>..\..\bin</DCC_ExeOutput>
 			<DCC_UnitSearchPath>..\..\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
-			<DCC_ExeOutput>..\..\bin\</DCC_ExeOutput>
-			<DCC_DependencyCheckOutputName>..\..\bin\hwclient.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\bin\hwserver2.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
@@ -37,7 +37,7 @@
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="hwclient.dpr">
+			<DelphiCompile Include="hwserver2.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<BuildConfiguration Include="Base">
@@ -59,7 +59,7 @@
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">hwclient.dpr</Source>
+						<Source Name="MainSource">hwserver2.dpr</Source>
 					</Source>
 					<Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>

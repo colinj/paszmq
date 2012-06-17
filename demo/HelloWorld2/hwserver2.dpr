@@ -7,7 +7,7 @@
   Translated from the original C code from the ZeroMQ Guide.
 
 }
-program hwserver;
+program hwserver2;
 
 {$APPTYPE CONSOLE}
 

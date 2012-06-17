@@ -7,7 +7,7 @@
   Translated from the original C code from the ZeroMQ Guide.
 
 }
-program hwclient;
+program hwclient2;
 
 {$APPTYPE CONSOLE}
 
@@ -29,6 +29,7 @@ begin
   Writeln('Connecting to hello world server');
   requester := zmq_socket(context, ZMQ_REQ);
   zmq_connect(requester, 'tcp://localhost:5555');
+  zmq_connect(requester, 'tcp://localhost:5556');
 
   for request_nbr := 0 to 20 do
   begin

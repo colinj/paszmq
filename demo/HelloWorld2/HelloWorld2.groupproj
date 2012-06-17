@@ -3,10 +3,10 @@
 			<ProjectGuid>{EC58FF26-BF06-4BC9-BAF4-8B375A206509}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
-			<Projects Include="hwserver.dproj">
+			<Projects Include="hwserver2.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="hwclient.dproj">
+			<Projects Include="hwclient2.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -17,32 +17,32 @@
 				<Default.Personality/>
 			</BorlandProject>
 		</ProjectExtensions>
-		<Target Name="hwserver">
-			<MSBuild Projects="hwserver.dproj"/>
+		<Target Name="hwserver2">
+			<MSBuild Projects="hwserver2.dproj"/>
 		</Target>
-		<Target Name="hwserver:Clean">
-			<MSBuild Targets="Clean" Projects="hwserver.dproj"/>
+		<Target Name="hwserver2:Clean">
+			<MSBuild Targets="Clean" Projects="hwserver2.dproj"/>
 		</Target>
-		<Target Name="hwserver:Make">
-			<MSBuild Targets="Make" Projects="hwserver.dproj"/>
+		<Target Name="hwserver2:Make">
+			<MSBuild Targets="Make" Projects="hwserver2.dproj"/>
 		</Target>
-		<Target Name="hwclient">
-			<MSBuild Projects="hwclient.dproj"/>
+		<Target Name="hwclient2">
+			<MSBuild Projects="hwclient2.dproj"/>
 		</Target>
-		<Target Name="hwclient:Clean">
-			<MSBuild Targets="Clean" Projects="hwclient.dproj"/>
+		<Target Name="hwclient2:Clean">
+			<MSBuild Targets="Clean" Projects="hwclient2.dproj"/>
 		</Target>
-		<Target Name="hwclient:Make">
-			<MSBuild Targets="Make" Projects="hwclient.dproj"/>
+		<Target Name="hwclient2:Make">
+			<MSBuild Targets="Make" Projects="hwclient2.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="hwserver;hwclient"/>
+			<CallTarget Targets="hwserver2;hwclient2"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="hwserver:Clean;hwclient:Clean"/>
+			<CallTarget Targets="hwserver2:Clean;hwclient2:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="hwserver:Make;hwclient:Make"/>
+			<CallTarget Targets="hwserver2:Make;hwclient2:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>
