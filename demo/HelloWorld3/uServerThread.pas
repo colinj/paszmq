@@ -73,7 +73,7 @@ begin
       end;
 
       //  Do some 'work'
-      Sleep (10);
+      Sleep (500);
 
       //  Send reply back to client
       s_send(Responder, 'World');
