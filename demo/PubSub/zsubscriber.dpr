@@ -41,6 +41,6 @@ begin
     Writeln(Format('%s - %s', [Topic, Msg]));
   end;
 
-  zmq_close (Subscriber);
-  zmq_term (Context);
+  zmq_close(Subscriber);
+  zmq_term(Context);
 end.

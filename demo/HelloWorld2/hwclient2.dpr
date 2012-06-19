@@ -1,12 +1,10 @@
-{
-
-  Hello World server in Delphi
-  Binds REP socket to tcp://*:5555
-  Expects "Hello" from client, replies with "World"
-
-  Translated from the original C code from the ZeroMQ Guide.
-
-}
+//
+//  Hello World client in Delphi
+//  Connects REQ socket to tcp://localhost:5555
+//  Sends "Hello" to server, expects a reply with "World"
+//
+//  Translated from the original C code from the ZeroMQ Guide.
+//
 program hwclient2;
 
 {$APPTYPE CONSOLE}
@@ -17,31 +15,30 @@ uses
   zhelper;
 
 var
-  context: Pointer;
-  requester: Pointer;
-  request_nbr: Integer;
-  msg: string;
+  Context: Pointer;
+  Requestor: Pointer;
+  Msg: string;
+  I: Integer;
 
 begin
-  context := zmq_init(1);
+  Context := zmq_init(1);
 
   //  Socket to talk to server
   Writeln('Connecting to hello world server');
-  requester := zmq_socket(context, ZMQ_REQ);
-  zmq_connect(requester, 'tcp://localhost:5555');
-  zmq_connect(requester, 'tcp://localhost:5556');
+  Requestor := zmq_socket(Context, ZMQ_REQ);
+  zmq_connect(Requestor, 'tcp://localhost:5555');
 
-  for request_nbr := 0 to 20 do
+  for I := 0 to 20 do
   begin
-    msg := Format('Hello %d from %s', [request_nbr, ParamStr(1)]);
-    Writeln('Sending... ', msg);
-    s_send(requester, msg);
+    Msg := Format('Hello %d from %s', [I, ParamStr(1)]);
+    Writeln('Sending... ', Msg);
+    s_send(Requestor, Msg);
 
-    msg := s_recv(requester);
-    Writeln('Received ', request_nbr, msg);
+    Msg := s_recv(Requestor);
+    Writeln('Received ', I, Msg);
     Sleep(200);
   end;
 
-  zmq_close (requester);
-  zmq_term (context);
+  zmq_close (Requestor);
+  zmq_term (Context);
 end.

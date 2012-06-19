@@ -16,38 +16,38 @@ uses
   zmq;
 
 var
-  context: Pointer;
-  responder: Pointer;
-  request: zmq_msg_t;
-  reply: zmq_msg_t;
+  Context: Pointer;
+  Responder: Pointer;
+  Request: zmq_msg_t;
+  Reply: zmq_msg_t;
 
 begin
-  context := zmq_init(1);
+  Context := zmq_init(1);
 
   //  Socket to talk to clients
 
-  responder := zmq_socket(context, ZMQ_REP);
-  zmq_bind(responder, 'tcp://*:5555');
+  Responder := zmq_socket(Context, ZMQ_REP);
+  zmq_bind(Responder, 'tcp://*:5555');
 
   while True do
   begin
-    //  Wait for next request from client
-    zmq_msg_init(request);
-    zmq_recv(responder, request, 0);
+    //  Wait for next Request from client
+    zmq_msg_init(Request);
+    zmq_recv(Responder, Request, 0);
     Writeln('Received Hello');
-    zmq_msg_close(request);
+    zmq_msg_close(Request);
 
     //  Do some 'work'
     Sleep (1);
 
-    //  Send reply back to client
-    zmq_msg_init_size(reply, 5);
-    StrLCopy(zmq_msg_data(reply), 'World', 5);
-    zmq_send(responder, reply, 0);
-    zmq_msg_close(reply);
+    //  Send Reply back to client
+    zmq_msg_init_size(Reply, 5);
+    StrLCopy(zmq_msg_data(Reply), 'World', 5);
+    zmq_send(Responder, Reply, 0);
+    zmq_msg_close(Reply);
   end;
 
   //  We never get here but if we did, this would be how we end
-  zmq_close(responder);
-  zmq_term(context);
+  zmq_close(Responder);
+  zmq_term(Context);
 end.

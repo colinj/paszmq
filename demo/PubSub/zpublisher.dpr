@@ -22,13 +22,12 @@ begin
   Counter := 0;
   Context := zmq_init(1);
 
-  //  Socket to talk to clients
-
+  //  Socket to publish from
   Publisher := zmq_socket(Context, ZMQ_PUB);
   zmq_bind(Publisher, 'tcp://*:5563');
 
   // Add a pause, in order to allow subscribers time to establish connection with the publisher
-  // otherwise published messages will be lost before they have a chance to subscribe to them.
+  // otherwise early messages will be lost before subscribers have a chance to receive them.
   Sleep(1000);
 
   while True do

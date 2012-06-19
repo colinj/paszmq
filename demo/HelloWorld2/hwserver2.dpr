@@ -1,12 +1,10 @@
-{
-
-  Hello World server in Delphi
-  Binds REP socket to tcp://*:5555
-  Expects "Hello" from client, replies with "World"
-
-  Translated from the original C code from the ZeroMQ Guide.
-
-}
+//
+//  Hello World server in Delphi
+//  Binds REP socket to tcp://*:5555
+//  Expects "Hello" from client, replies with "World"
+//
+//  Translated from the original C code from the ZeroMQ Guide.
+//
 program hwserver2;
 
 {$APPTYPE CONSOLE}
@@ -17,32 +15,31 @@ uses
   zhelper;
 
 var
-  context: Pointer;
-  responder: Pointer;
-  msg: string;
+  Context: Pointer;
+  Responder: Pointer;
+  Msg: string;
 
 begin
-  context := zmq_init(1);
+  Context := zmq_init(1);
 
   //  Socket to talk to clients
-
-  responder := zmq_socket(context, ZMQ_REP);
-  zmq_bind(responder, 'tcp://*:5555');
+  Responder := zmq_socket(Context, ZMQ_REP);
+  zmq_bind(Responder, 'tcp://*:5555');
 
   while True do
   begin
     //  Wait for next request from client
-    msg := s_recv(responder);
-    Writeln('Received: ', msg);
+    Msg := s_recv(Responder);
+    Writeln('Received: ', Msg);
 
     //  Do some 'work'
     Sleep (1);
 
     //  Send reply back to client
-    s_send(responder, 'World');
+    s_send(Responder, 'World');
   end;
 
   //  We never get here but if we did, this would be how we end
-  zmq_close(responder);
-  zmq_term(context);
+  zmq_close(Responder);
+  zmq_term(Context);
 end.

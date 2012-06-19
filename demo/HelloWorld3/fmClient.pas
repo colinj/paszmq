@@ -37,7 +37,7 @@ end;
 procedure TfrmClient.btnDemo1Click(Sender: TObject);
 var
   Context: Pointer;
-  Requester: Pointer;
+  Requestor: Pointer;
   I: Integer;
   Msg: string;
 begin
@@ -45,50 +45,50 @@ begin
 
   //  Socket to talk to server
   AddLine('Connecting to hello world server');
-  Requester := zmq_socket(Context, ZMQ_REQ);
-  zmq_connect(Requester, 'tcp://localhost:5555');
+  Requestor := zmq_socket(Context, ZMQ_REQ);
+  zmq_connect(Requestor, 'tcp://localhost:5555');
 
   for I := 0 to 50 do
   begin
     Msg := Format('Hello %d from %s', [I, edtName.Text]);
     AddLine(Format('Sending... %s', [Msg]));
-    s_send(Requester, Msg);
+    s_send(Requestor, Msg);
 
-    Msg := s_recv(Requester);
+    Msg := s_recv(Requestor);
     AddLine(Format('Received %d - %s', [I, Msg]));
   end;
 
-  zmq_close (Requester);
+  zmq_close (Requestor);
   zmq_term (Context);
 end;
 
 procedure TfrmClient.btnDemo2Click(Sender: TObject);
 var
   Context: Pointer;
-  Requester: Pointer;
-  I: Integer;
+  Requestor: Pointer;
   Msg: string;
+  I: Integer;
 begin
   Context := zmq_init(1);
 
   //  Socket to talk to server
   AddLine('Connecting to hello world server');
-  Requester := zmq_socket(Context, ZMQ_REQ);
-  zmq_connect(Requester, 'tcp://localhost:5555');
-  zmq_connect(Requester, 'tcp://localhost:5556');
+  Requestor := zmq_socket(Context, ZMQ_REQ);
+  zmq_connect(Requestor, 'tcp://localhost:5555');
+  zmq_connect(Requestor, 'tcp://localhost:5556');
 
   for I := 0 to 50 do
   begin
     Msg := Format('Hello %d from %s', [I, edtName.Text]);
     AddLine(Format('Sending... %s', [Msg]));
-    s_send(Requester, Msg);
+    s_send(Requestor, Msg);
 
-    Msg := s_recv(Requester);
+    Msg := s_recv(Requestor);
     AddLine(Format('Received %d - %s', [I, Msg]));
   end;
 
-  zmq_close (Requester);
-  zmq_term (Context);
+  zmq_close(Requestor);
+  zmq_term(Context);
 end;
 
 end.
