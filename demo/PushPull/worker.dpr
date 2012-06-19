@@ -45,7 +45,7 @@ begin
     Sleep(StrToInt(Msg));
 
     // Send result to sink
-    s_send(Sender, '1');
+    s_send(Sender, '');
   end;
 
   zmq_close(Receiver);
