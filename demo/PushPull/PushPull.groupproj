@@ -1,0 +1,60 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{EC58FF26-BF06-4BC9-BAF4-8B375A206509}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="ventilator.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="worker.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="sink.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="ventilator">
+			<MSBuild Projects="ventilator.dproj"/>
+		</Target>
+		<Target Name="ventilator:Clean">
+			<MSBuild Targets="Clean" Projects="ventilator.dproj"/>
+		</Target>
+		<Target Name="ventilator:Make">
+			<MSBuild Targets="Make" Projects="ventilator.dproj"/>
+		</Target>
+		<Target Name="worker">
+			<MSBuild Projects="worker.dproj"/>
+		</Target>
+		<Target Name="worker:Clean">
+			<MSBuild Targets="Clean" Projects="worker.dproj"/>
+		</Target>
+		<Target Name="worker:Make">
+			<MSBuild Targets="Make" Projects="worker.dproj"/>
+		</Target>
+		<Target Name="sink">
+			<MSBuild Projects="sink.dproj"/>
+		</Target>
+		<Target Name="sink:Clean">
+			<MSBuild Targets="Clean" Projects="sink.dproj"/>
+		</Target>
+		<Target Name="sink:Make">
+			<MSBuild Targets="Make" Projects="sink.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="ventilator;worker;sink"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="ventilator:Clean;worker:Clean;sink:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="ventilator:Make;worker:Make;sink:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
