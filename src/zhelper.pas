@@ -5,47 +5,66 @@ interface
 uses
   SysUtils, Classes, zmq;
 
-function s_recv(socket: Pointer): string;
-function s_send(socket: Pointer; s: string): Integer;
+function s_recv(aSocket: Pointer): string;
+function s_send(aSocket: Pointer; s: string): Integer;
+function s_sendmore(aSocket: Pointer; s: string): Integer;
 
 implementation
 
-function s_recv(socket: Pointer): string;
+//  Receive 0MQ string from socket and convert into Delphi string
+//  Returns empty string if the context is being terminated.
+function s_recv(aSocket: Pointer): string;
 var
-  msg: zmq_msg_t;
-  msg_size: Integer;
-  msg_data: Pointer;
+  Msg: zmq_msg_t;
+  MsgSize: Integer;
+  MsgData: Pointer;
   LBytes: TBytes;
 begin
-  zmq_msg_init(msg);
+  zmq_msg_init(Msg);
 
-  if zmq_recv(socket, msg, 0) < 0 then
+  if zmq_recv(aSocket, Msg, 0) < 0 then
   begin
     Result := '';
   end
   else
   begin
-    msg_size := zmq_msg_size(msg);
-    msg_data := zmq_msg_data(msg);
-    SetLength(LBytes, msg_size);
-    System.Move(msg_data^, LBytes[0], msg_size);
-    Result := TEncoding.UTF8.GetString(LBytes, 0, msg_size);
+    MsgSize := zmq_msg_size(Msg);
+    MsgData := zmq_msg_data(Msg);
+    SetLength(LBytes, MsgSize);
+    System.Move(MsgData^, LBytes[0], MsgSize);
+    Result := TEncoding.UTF8.GetString(LBytes, 0, MsgSize);
   end;
-  zmq_msg_close(msg);
+  zmq_msg_close(Msg);
 end;
 
-function s_send(socket: Pointer; s: string): Integer;
+//  Convert string to 0MQ string and send to socket
+function s_send(aSocket: Pointer; s: string): Integer;
 var
-  msg: zmq_msg_t;
-  msg_data: Pointer;
+  Msg: zmq_msg_t;
+  MsgData: Pointer;
   LBytes: TBytes;
 begin
   LBytes := TEncoding.UTF8.GetBytes(s);
-  zmq_msg_init_size(msg, Length(LBytes));
-  msg_data := zmq_msg_data(msg);
-  System.Move(LBytes[0], msg_data^, Length(LBytes));
-  Result := zmq_send(socket, msg, 0);
-  zmq_msg_close(msg);
+  zmq_msg_init_size(Msg, Length(LBytes));
+  MsgData := zmq_msg_data(Msg);
+  System.Move(LBytes[0], MsgData^, Length(LBytes));
+  Result := zmq_send(aSocket, Msg, 0);
+  zmq_msg_close(Msg);
+end;
+
+//  Sends string as 0MQ string, as multipart non-terminal
+function s_sendmore(aSocket: Pointer; s: string): Integer;
+var
+  Msg: zmq_msg_t;
+  MsgData: Pointer;
+  LBytes: TBytes;
+begin
+  LBytes := TEncoding.UTF8.GetBytes(s);
+  zmq_msg_init_size(Msg, Length(LBytes));
+  MsgData := zmq_msg_data(Msg);
+  System.Move(LBytes[0], MsgData^, Length(LBytes));
+  Result := zmq_send(aSocket, Msg, ZMQ_SNDMORE);
+  zmq_msg_close(Msg);
 end;
 
 end.
