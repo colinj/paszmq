@@ -46,7 +46,7 @@ begin
       frmServer.Memo1.Lines.Add('Server started.');
     end);
 
-  TimeOut := 1000;
+  TimeOut := 50;
   Context := zmq_init(1);
 
   //  Socket to talk to clients
@@ -70,13 +70,13 @@ begin
           begin
             frmServer.Memo1.Lines.Add('Received: ' + Msg);
           end);
+
+        //  Do some 'work'
+        Sleep (300);
+
+        //  Send reply back to client
+        s_send(Responder, 'World');
       end;
-
-      //  Do some 'work'
-      Sleep (500);
-
-      //  Send reply back to client
-      s_send(Responder, 'World');
     end;
   finally
     //  Close connection

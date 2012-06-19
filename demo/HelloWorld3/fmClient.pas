@@ -31,6 +31,7 @@ uses zmq, zhelper;
 procedure TfrmClient.AddLine(const s: string);
 begin
   Memo1.Lines.Add(s);
+  Application.ProcessMessages;
 end;
 
 procedure TfrmClient.btnDemo1Click(Sender: TObject);

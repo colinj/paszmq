@@ -52,7 +52,6 @@ object frmClient: TfrmClient
     EditLabel.Width = 27
     EditLabel.Height = 13
     EditLabel.Caption = 'Name'
-    NumbersOnly = True
     TabOrder = 3
     Text = 'Fred'
   end
