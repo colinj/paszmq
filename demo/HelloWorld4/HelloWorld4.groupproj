@@ -1,0 +1,72 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{B2C18C70-9256-4B4B-A5C5-A58029F4833F}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="rrServer.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="rrClient.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="rrBrokerGUI.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="rrBroker.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="rrServer">
+			<MSBuild Projects="rrServer.dproj"/>
+		</Target>
+		<Target Name="rrServer:Clean">
+			<MSBuild Targets="Clean" Projects="rrServer.dproj"/>
+		</Target>
+		<Target Name="rrServer:Make">
+			<MSBuild Targets="Make" Projects="rrServer.dproj"/>
+		</Target>
+		<Target Name="rrClient">
+			<MSBuild Projects="rrClient.dproj"/>
+		</Target>
+		<Target Name="rrClient:Clean">
+			<MSBuild Targets="Clean" Projects="rrClient.dproj"/>
+		</Target>
+		<Target Name="rrClient:Make">
+			<MSBuild Targets="Make" Projects="rrClient.dproj"/>
+		</Target>
+		<Target Name="rrBrokerGUI">
+			<MSBuild Projects="rrBrokerGUI.dproj"/>
+		</Target>
+		<Target Name="rrBrokerGUI:Clean">
+			<MSBuild Targets="Clean" Projects="rrBrokerGUI.dproj"/>
+		</Target>
+		<Target Name="rrBrokerGUI:Make">
+			<MSBuild Targets="Make" Projects="rrBrokerGUI.dproj"/>
+		</Target>
+		<Target Name="rrBroker">
+			<MSBuild Projects="rrBroker.dproj"/>
+		</Target>
+		<Target Name="rrBroker:Clean">
+			<MSBuild Targets="Clean" Projects="rrBroker.dproj"/>
+		</Target>
+		<Target Name="rrBroker:Make">
+			<MSBuild Targets="Make" Projects="rrBroker.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="rrServer;rrClient;rrBrokerGUI;rrBroker"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="rrServer:Clean;rrClient:Clean;rrBrokerGUI:Clean;rrBroker:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="rrServer:Make;rrClient:Make;rrBrokerGUI:Make;rrBroker:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
