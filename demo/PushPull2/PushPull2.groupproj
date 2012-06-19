@@ -6,10 +6,10 @@
 			<Projects Include="ventilator.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="worker.dproj">
+			<Projects Include="worker2.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="sink.dproj">
+			<Projects Include="sink2.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -29,32 +29,32 @@
 		<Target Name="ventilator:Make">
 			<MSBuild Targets="Make" Projects="ventilator.dproj"/>
 		</Target>
-		<Target Name="worker">
-			<MSBuild Projects="worker.dproj"/>
+		<Target Name="worker2">
+			<MSBuild Projects="worker2.dproj"/>
 		</Target>
-		<Target Name="worker:Clean">
-			<MSBuild Targets="Clean" Projects="worker.dproj"/>
+		<Target Name="worker2:Clean">
+			<MSBuild Targets="Clean" Projects="worker2.dproj"/>
 		</Target>
-		<Target Name="worker:Make">
-			<MSBuild Targets="Make" Projects="worker.dproj"/>
+		<Target Name="worker2:Make">
+			<MSBuild Targets="Make" Projects="worker2.dproj"/>
 		</Target>
-		<Target Name="sink">
-			<MSBuild Projects="sink.dproj"/>
+		<Target Name="sink2">
+			<MSBuild Projects="sink2.dproj"/>
 		</Target>
-		<Target Name="sink:Clean">
-			<MSBuild Targets="Clean" Projects="sink.dproj"/>
+		<Target Name="sink2:Clean">
+			<MSBuild Targets="Clean" Projects="sink2.dproj"/>
 		</Target>
-		<Target Name="sink:Make">
-			<MSBuild Targets="Make" Projects="sink.dproj"/>
+		<Target Name="sink2:Make">
+			<MSBuild Targets="Make" Projects="sink2.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="ventilator;worker;sink"/>
+			<CallTarget Targets="ventilator;worker2;sink2"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="ventilator:Clean;worker:Clean;sink:Clean"/>
+			<CallTarget Targets="ventilator:Clean;worker2:Clean;sink2:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="ventilator:Make;worker:Make;sink:Make"/>
+			<CallTarget Targets="ventilator:Make;worker2:Make;sink2:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>
