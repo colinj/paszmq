@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{EC58FF26-BF06-4BC9-BAF4-8B375A206509}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="zpublisher.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="zsubscriber.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="zpublisher">
+			<MSBuild Projects="zpublisher.dproj"/>
+		</Target>
+		<Target Name="zpublisher:Clean">
+			<MSBuild Targets="Clean" Projects="zpublisher.dproj"/>
+		</Target>
+		<Target Name="zpublisher:Make">
+			<MSBuild Targets="Make" Projects="zpublisher.dproj"/>
+		</Target>
+		<Target Name="zsubscriber">
+			<MSBuild Projects="zsubscriber.dproj"/>
+		</Target>
+		<Target Name="zsubscriber:Clean">
+			<MSBuild Targets="Clean" Projects="zsubscriber.dproj"/>
+		</Target>
+		<Target Name="zsubscriber:Make">
+			<MSBuild Targets="Make" Projects="zsubscriber.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="zpublisher;zsubscriber"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="zpublisher:Clean;zsubscriber:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="zpublisher:Make;zsubscriber:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
